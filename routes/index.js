@@ -65,29 +65,29 @@ module.exports = function makeRouterWithSockets (io, client) {
     client.query('SELECT * FROM Users WHERE name = $1',[req.body.name], function(err, result){
       if (err) return next(err);
       var currentUser = req.body.name;
-      console.log("result: "+JSON.stringify(result.rows[0]));
-      if (!result.rows.name){
+      if (!result.rows[0]){
         client.query('INSERT INTO Users (name) VALUES ($1)', [req.body.name], function(err, result){
           if (err) return next(err);
-          currentUser = result.rows;
-          console.log(currentUser);
+          console.log("insertion result: "+JSON.stringify(result.rows[0]));
+          client.query('SELECT * FROM Users WHERE name = $1',[req.body.name], function(err, result){
+            if (err) return next(err);
+            client.query('INSERT INTO tweets (userId, content) VALUES ($1, $2)', [result.rows[0].id, req.body.content], function (err, result) {
+              if (err) return next(err);
+              //io.sockets.emit('new_tweet', newTweet);
+              res.redirect('/');
+            });
+          });
         });
       }
-      client.query('INSERT INTO tweets (userId, content) VALUES ($1, $2)', [currentUser.id, req.body.content], function (err, result) {
-        //console.log(result);
-        //io.sockets.emit('new_tweet', newTweet);
-        res.redirect('/');
-      });
-    })
-    // var newTweet = tweetBank.add(req.body.name, req.body.content);
-    // io.sockets.emit('new_tweet', newTweet);
-    // res.redirect('/');
+      else{
+        client.query('INSERT INTO tweets (userId, content) VALUES ($1, $2)', [result.rows[0].id, req.body.content], function (err, result) {
+          if (err) return next(err);
+          //io.sockets.emit('new_tweet', newTweet);
+          res.redirect('/');
+        });
+      }
+    });
   });
-
-  // // replaced this hard-coded route with general static routing in app.js
-  // router.get('/stylesheets/style.css', function(req, res, next){
-  //   res.sendFile('/stylesheets/style.css', { root: __dirname + '/../public/' });
-  // });
 
 
 
