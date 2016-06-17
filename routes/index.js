@@ -69,7 +69,7 @@ module.exports = function makeRouterWithSockets (io, client) {
           if (err) return next(err);
           // console.log("insertion result: "+JSON.stringify(result.rows[0]));
 
-          // We could have used an OUTPUT clause before VALUES to return from our query the user of interest!!!
+          // We could have used a RETURNING clause before VALUES to return from our query the user of interest!!!
 
           client.query('SELECT * FROM Users WHERE name = $1',[req.body.name], function(err, result){
             if (err) return next(err);
