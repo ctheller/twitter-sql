@@ -28,7 +28,11 @@
       <div id="tweets">
       {% for tweet in tweets | reverse %}
         <div class="tweetbox">
+          {% if tweet.pictureurl %}
+          <img src={{tweet.pictureurl}}>
+          {% else %}
           <img src="http://lorempixel.com/48/48?name={{ tweet.name }}">
+          {% endif %}
           <div class="content">
             <p class="by"><a href="/users/{{ tweet.name }}">{{tweet.name}}</a></p>
             <p><a href="/tweets/{{ tweet.id }}">{{tweet.content}}</a></p>
